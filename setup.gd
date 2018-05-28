@@ -7,7 +7,7 @@ func _ready():
 
 	var rawText = projectFile.get_as_text()
 	
-	var gogodotAutoload = 'go="*res://addons/gogodot/go.gd"'
+	var gogodotAutoload = 'go="*res://addons/GoGodot/go.gd"'
 	if rawText.find(gogodotAutoload) == -1:
 		var autoloadPos = rawText.find("[autoload]")
 		
