@@ -81,7 +81,7 @@ func _find_scene_file(fileName, dirPath = "res://"): #if path not provided, assu
 			if dirResult: #i.e. not null
 				return dirResult
 		#elif file.ends_with(".tscn") and file.begins_with(fileName) and file.length == (fileName.length + 5):
-		elif file.to_lower() == fileName.to_lower() + ".tscn":
+		elif file.to_lower() == fileName.to_lower() + (".tscn" if fileName.find(".tscn") == -1 else ""):
 			return dir.get_current_dir() + "/" + file
 			
 		file = dir.get_next()
