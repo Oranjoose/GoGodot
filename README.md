@@ -1,3 +1,4 @@
+
 # GoGodot
 A Godot add-on library to simplify common operations.
 
@@ -58,3 +59,16 @@ func go_collision(otherArea):
 Example:
 #The following code reloads the current main scene
 `go.restart_game()`
+
+-------
+
+### function get_all_nodes_by_class
+
+This function returns an array of all the nodes in the SceneTree that match a given class name.
+
+Example:
+```
+var allLabels = go.get_all_nodes_by_class("Label")
+for label in allLabels:
+  label.text = "all labels now show this text!"
+```
