@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "tool
+extends Node
+
+func _ready():
+	var projectFile = File.new()
+	projectFile.open(\"res://project.godot\", projectFile.READ_WRITE)
+
+	var rawText = projectFile.get_as_text()
+	
+	var goScriptPath = _find_file(\"go\", \"res://\", \"gd\")
+	
+	#var gogodotAutoload = 'go=\"*res://addons/GoGodot/go.gd\"'
+	var gogodotAutoload = 'go=\"*' + goScriptPath + '\"'
+	if rawText.find(gogodotAutoload) == -1:
+		var autoloadPos = rawText.find(\"[autoload]\")
+		
+		if autoloadPos == -1:
+			rawText += \"\\n[autoload]\\n\\n\" + gogodotAutoload + \"\\n\"
+		else:
+			rawText = rawText.insert(autoloadPos + 12, gogodotAutoload + \"\\n\")
+		
+		projectFile.store_string(rawText)
+
+
+#	while !projectFile.eof_reached():
+#		var nextLine = projectFile.get_line()
+#
+#		if nextLine == \"[autoload]\":
+#			print(\"autoload reached\")
+#			#projectFile.get_line() #skip empty line
+#			var filePosition = projectFile.get_position()
+#			projectFile.close()
+#
+#			projectFile.open(\"res://projectz.godot\", projectFile.READ_WRITE)
+#			projectFile.seek(filePosition)
+#			projectFile.store_line(\"\")
+#			projectFile.store_line(\"testing it out\")
+#			print(\"got here\")
+#			break
+#
+#		print(nextLine)
+		
+		
+	projectFile.close()
+	
+	pass
+
+#this is a duplicate of the _find_file function in the go.gd script,
+#but can't run the _find_file from go.gd until this script loads it in
+func _find_file(fileName, dirPath = \"res://\", extension = \"tscn\"): #if path not provided, assume this is the first call in the root
+	
+	var files = []
+	var dir = Directory.new()
+	dir.change_dir(dirPath)
+	dir.list_dir_begin()
+	
+	var file = dir.get_next()
+	
+	while file != \"\":
+		if not file.begins_with(\".\") and dir.current_is_dir():
+			
+			var dirResult = _find_file(fileName, dir.get_current_dir() + \"/\" + file)
+			
+			#pass back the correct answer if was found in this directory
+			if dirResult: #i.e. not null
+				return dirResult
+		#elif file.ends_with(\".tscn\") and file.begins_with(fileName) and file.length == (fileName.length + 5):
+		elif file.to_lower() == fileName.to_lower() + (\".\" + extension if fileName.find(\".\" + extension) == -1 else \"\"):
+			return dir.get_current_dir() + \"/\" + file
+			
+		file = dir.get_next()
+		
+	dir.list_dir_end()
+	
+	return null
+
+"
+
+[node name="Node" type="Node" index="0"]
+
+script = SubResource( 1 )
+_sections_unfolded = [ "Pause" ]
+
+

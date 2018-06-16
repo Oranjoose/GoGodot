@@ -14,8 +14,7 @@ func _ready():
 	pass
 
 func _process(delta):
-	# Called every frame. Delta is time since last frame.
-	# Update game logic here.
+
 	pass
 	
 func get_all_nodes_by_class(className):
@@ -41,7 +40,7 @@ func restart_scene():
 	
 func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
 	
-	var scenePath = _find_scene_file(sceneName)
+	var scenePath = _find_file(sceneName)
 	if scenePath:
 		var instance = load(scenePath).instance()
 		
@@ -61,9 +60,15 @@ func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
 		return null
 	
 	pass 
-	
+
+func destroy (objectToDestroy):
+	if objectToDestroy.has_method("queue_free"):
+		objectToDestroy.queue_free()
+	else:
+		print (objectToDestroy, " cannot be removed this way")
+
 #return file path to file if found, and -1 if not
-func _find_scene_file(fileName, dirPath = "res://"): #if path not provided, assume this is the first call in the root
+func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not provided, assume this is the first call in the root
 	
 	var files = []
 	var dir = Directory.new()
@@ -75,13 +80,13 @@ func _find_scene_file(fileName, dirPath = "res://"): #if path not provided, assu
 	while file != "":
 		if not file.begins_with(".") and dir.current_is_dir():
 			
-			var dirResult = _find_scene_file(fileName, dir.get_current_dir() + "/" + file)
+			var dirResult = _find_file(fileName, dir.get_current_dir() + "/" + file)
 			
 			#pass back the correct answer if was found in this directory
 			if dirResult: #i.e. not null
 				return dirResult
 		#elif file.ends_with(".tscn") and file.begins_with(fileName) and file.length == (fileName.length + 5):
-		elif file.to_lower() == fileName.to_lower() + (".tscn" if fileName.find(".tscn") == -1 else ""):
+		elif file.to_lower() == fileName.to_lower() + ("." + extension if fileName.find("." + extension) == -1 else ""):
 			return dir.get_current_dir() + "/" + file
 			
 		file = dir.get_next()
