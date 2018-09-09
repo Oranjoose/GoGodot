@@ -11,6 +11,11 @@ func _ready():
 	for area in get_all_nodes_by_class("Area2D"):
 		_attach_collision_to_area2d(area)
 	
+#	for nodeWithTimer in get_all_nodes_with_function("go_interval"):
+#		pass
+	
+	get_tree().connect("node_added", self, "_node_added_to_scene_tree")
+	
 	pass
 
 func _process(delta):
@@ -35,6 +40,26 @@ func _get_nodes_by_class_within_node(className, nodeToCheck):
 		
 	return nodesOfClass
 	
+func get_all_nodes_with_function(funcName):
+	return _get_nodes_with_function_within_node(funcName, get_tree().root)
+	
+func _get_nodes_with_function_within_node(funcName, nodeToCheck):
+	var nodesWithFunction = []
+	var children = nodeToCheck.get_children()
+	
+	if nodeToCheck.has_method(funcName):
+		nodesWithFunction.append(nodeToCheck)
+	
+	if children.empty():
+		return nodesWithFunction
+	
+	for child in children:
+		nodesWithFunction += _get_nodes_with_function_within_node(funcName, child) #combine lists
+		
+	return nodesWithFunction
+	
+	
+	
 func restart_scene():
 	get_tree().reload_current_scene()
 	
@@ -51,9 +76,10 @@ func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
 			
 		Main.add_child(instance)
 		
-		#if there are any area 2D nodes within this new instance, then attach the go_collision signal to it 
-		for area in _get_nodes_by_class_within_node("Area2D", instance):
-			_attach_collision_to_area2d(area)
+#		#this is now handled by the node_added signal attached to the scene tree, so as to catch new Area2D nodes
+#			#created by traditional methods of adding new instances without go.spawn_instance 
+#		for area in _get_nodes_by_class_within_node("Area2D", instance):
+#			_attach_collision_to_area2d(area)
 		
 		return instance
 	else:
@@ -101,8 +127,10 @@ func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not 
 func _attach_collision_to_area2d(area):
 	var nodeToAddCallback = _get_closest_node_in_ancestry_with_script(area)
 	
-	if nodeToAddCallback: #not null
+	if nodeToAddCallback and nodeToAddCallBack.has_method("go_collision"):
 		area.connect("area_entered", nodeToAddCallback, "go_collision")
+	else:
+		area.connect("area_entered", self, "_collision_fallback")
 	
 func _get_closest_node_in_ancestry_with_script (nodeToCheck):
 	if nodeToCheck.get_script():
@@ -116,3 +144,12 @@ func _get_closest_node_in_ancestry_with_script (nodeToCheck):
 		parentToCheck = parentToCheck.get_parent()
 
 	return null 
+	
+#fallback collision function if no ancestor node with go_collision was found
+#this is mostly to avoid the non-terminating error that occurs when the signal is fired but no function to receive.
+func _collision_fallback(otherArea):
+	pass
+	
+func _node_added_to_scene_tree(addedNode):
+	if addedNode.get_class().to_lower() == "area2d":
+		_attach_collision_to_area2d(addedNode)

@@ -61,9 +61,10 @@ func _find_file(fileName, dirPath = \"res://\", extension = \"tscn\"): #if path 
 	var file = dir.get_next()
 	
 	while file != \"\":
+		print(file.to_lower() + \" and \" + fileName.to_lower())
 		if not file.begins_with(\".\") and dir.current_is_dir():
 			
-			var dirResult = _find_file(fileName, dir.get_current_dir() + \"/\" + file)
+			var dirResult = _find_file(fileName, dir.get_current_dir() + \"/\" + file, extension)
 			
 			#pass back the correct answer if was found in this directory
 			if dirResult: #i.e. not null
@@ -80,9 +81,7 @@ func _find_file(fileName, dirPath = \"res://\", extension = \"tscn\"): #if path 
 
 "
 
-[node name="Node" type="Node" index="0"]
-
+[node name="Node" type="Node"]
 script = SubResource( 1 )
 _sections_unfolded = [ "Pause" ]
-
 

@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends Node
+
+export var Enabled = true
+export var MatchAngle = true
+export (float) var AngleOfMotion = 0.0
+export var Speed = 400
+
+func _ready():
+	# Called when the node is added to the scene for the first time.
+	# Initialization here
+	pass
+
+func _process(delta):
+	if Enabled:
+		var nodeToMove = self.get_parent()
+		if not \"position\" in nodeToMove:
+			print(\"GoGodot Behavior LinearMotion: cannot move node of type \" + nodeToMove.get_class())
+			return
+		
+		var radAngle = deg2rad(AngleOfMotion)
+		
+		if MatchAngle:
+			radAngle = nodeToMove.rotation
+		
+		var directionVector = Vector2(cos(radAngle), sin(radAngle))
+		nodeToMove.position += directionVector * Speed * delta
+"
+
+[node name="LinearMotion" type="Node"]
+
+script = SubResource( 1 )
+Enabled = true
+MatchAngle = true
+AngleOfMotion = 110.0
+Speed = 400
+
+
