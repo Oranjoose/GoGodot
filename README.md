@@ -72,3 +72,13 @@ var allLabels = go.get_all_nodes_by_class("Label")
 for label in allLabels:
   label.text = "all labels now show this text!"
 ```
+
+### function destroy
+
+Example:
+
+```
+#remove myObj
+go.remove(myObj)
+```
+Destroy is simply an alias for `queue_free()`, but ensures that the object trying to be removed can actually queue_free.
