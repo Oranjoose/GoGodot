@@ -127,7 +127,7 @@ func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not 
 func _attach_collision_to_area2d(area):
 	var nodeToAddCallback = _get_closest_node_in_ancestry_with_script(area)
 	
-	if nodeToAddCallback and nodeToAddCallBack.has_method("go_collision"):
+	if nodeToAddCallback and nodeToAddCallback.has_method("go_collision"):
 		area.connect("area_entered", nodeToAddCallback, "go_collision")
 	else:
 		area.connect("area_entered", self, "_collision_fallback")
