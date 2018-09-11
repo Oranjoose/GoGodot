@@ -151,5 +151,10 @@ func _collision_fallback(otherArea):
 	pass
 	
 func _node_added_to_scene_tree(addedNode):
+	#when scene is "reloaded", the Main scene is removed and readded
+	#so need to reset value for Main variable
+	if addedNode == get_tree().root.get_children()[get_tree().root.get_children().size()-1]:
+		Main = addedNode
+	
 	if addedNode.get_class().to_lower() == "area2d":
 		_attach_collision_to_area2d(addedNode)
