@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://GoGodot/go_modules/Spritesheet.gd" type="Script" id=1]
+
+[node name="Spritesheet" type="Sprite"]
+script = ExtResource( 1 )
+SpritesheetTexture = null
+CurrentFrame = 0
+Framerate = 12
+HorzFrames = 1
+VertFrames = 1
+FinalFrame = 1
+Loop = true
+Reverse = false
+IsPlaying = false
+Autostart = true
+
