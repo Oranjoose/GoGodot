@@ -1,6 +1,8 @@
 tool
 extends Sprite
 
+class_name Spritesheet
+
 export (Texture) var SpritesheetTexture setget _set_texture
 
 export var CurrentFrame = 0 setget _set_current_frame
@@ -19,6 +21,8 @@ export var Autostart = true setget _set_autostart
 
 var currentTime = 0
 var frameInterval = 1
+
+signal on_animation_end
 
 func _set_texture(value):
 	SpritesheetTexture = value
@@ -64,11 +68,23 @@ func _set_playing(value):
 	
 func _set_autostart(value):
 	Autostart = value
+	
+func play():
+	_set_playing(true)
+	
+func stop():
+	_set_playing(false)
+	
+	_set_current_frame(FirstFrame if not Reverse else FinalFrame)
+	
+func pause():
+	_set_playing(false)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	if Autostart:
 		IsPlaying = true
+		
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -76,11 +92,13 @@ func _process(delta):
 	if IsPlaying:
 		currentTime += delta
 		
-		print(CurrentFrame)
 		if currentTime > frameInterval * (CurrentFrame + 1 if not Reverse else FinalFrame - (CurrentFrame - FirstFrame)):
 			if CurrentFrame == (FinalFrame if not Reverse else FirstFrame):
 				_set_current_frame(FirstFrame if not Reverse else FinalFrame)
 				currentTime = FirstFrame * frameInterval #reset clock
+				
+				#print("animanimanim")
+				emit_signal("on_animation_end")
 				
 				if not Loop:
 					_set_playing(false)

@@ -7,9 +7,8 @@ func _ready():
 	# Initialization here
 	Main = get_tree().root.get_children()[get_tree().root.get_children().size()-1]
 	
-	#attach the go_collision callback to every area 2d node at the beginning of the game
-	for area in get_all_nodes_by_class("Area2D"):
-		_attach_collision_to_area2d(area)
+	#set up the gogodot custom signals
+	_attach_all_signals()
 	
 #	for nodeWithTimer in get_all_nodes_with_function("go_interval"):
 #		pass
@@ -17,6 +16,15 @@ func _ready():
 	get_tree().connect("node_added", self, "_node_added_to_scene_tree")
 	
 	pass
+	
+func _attach_all_signals():
+	#attach the go_collision callback to every area 2d node at the beginning of the game
+	for area in get_all_nodes_by_class("Area2D"):
+		#_attach_collision_to_area2d(area)
+		_attach_signal_to_ancestor_callback(area, "area_entered", "go_collision")
+		
+	for spritesheet in get_all_nodes_with_signal("on_animation_end"):
+		_attach_signal_to_ancestor_callback(spritesheet, "on_animation_end", "go_animation_end")
 
 func _process(delta):
 
@@ -28,7 +36,7 @@ func get_all_nodes_by_class(className):
 func _get_nodes_by_class_within_node(className, nodeToCheck):
 	var nodesOfClass = []
 	var children = nodeToCheck.get_children()
-	
+
 	if nodeToCheck.get_class().to_lower() == className.to_lower():
 		nodesOfClass.append(nodeToCheck)
 	
@@ -58,6 +66,23 @@ func _get_nodes_with_function_within_node(funcName, nodeToCheck):
 		
 	return nodesWithFunction
 	
+func get_all_nodes_with_signal(signalName):
+	return _get_nodes_with_signal_within_node(signalName, get_tree().root)
+	
+func _get_nodes_with_signal_within_node(signalName, nodeToCheck):
+	var nodesWithSignal = []
+	var children = nodeToCheck.get_children()
+	
+	if nodeToCheck.get_script() and nodeToCheck.get_script().has_script_signal(signalName):
+		nodesWithSignal.append(nodeToCheck)
+	
+	if children.empty():
+		return nodesWithSignal
+	
+	for child in children:
+		nodesWithSignal += _get_nodes_with_signal_within_node(signalName, child) #combine lists
+		
+	return nodesWithSignal
 	
 	
 func restart_scene():
@@ -121,9 +146,19 @@ func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not 
 	
 	return null
 
+func _attach_signal_to_ancestor_callback(nodeWithSignal, signalName, callbackName):
+	var nodeToAddCallback = _get_closest_node_in_ancestry_with_callback(nodeWithSignal, callbackName)
+	
+	if nodeToAddCallback and nodeToAddCallback.has_method(callbackName):
+		
+		nodeWithSignal.connect(signalName, nodeToAddCallback, callbackName)
+	else:
+		nodeWithSignal.connect(signalName, self, "_short_circuit")
+
 #attach a collision signal callback to area2d if it has a script, and if not, to its nearest parent with a script
 #this is to make collisions more simple for beginners, as all they have to do is type the go_collision function and it
 	#automatically works
+#this function has been mostly deprecated by the more generalized _attach_signal_to_ancestor_callback
 func _attach_collision_to_area2d(area):
 	var nodeToAddCallback = _get_closest_node_in_ancestry_with_script(area)
 	
@@ -145,9 +180,23 @@ func _get_closest_node_in_ancestry_with_script (nodeToCheck):
 
 	return null 
 	
-#fallback collision function if no ancestor node with go_collision was found
+func _get_closest_node_in_ancestry_with_callback (nodeToCheck, callbackName):
+	if nodeToCheck.has_method(callbackName):
+		return nodeToCheck
+	
+	var parentToCheck = nodeToCheck.get_parent()
+	while parentToCheck:
+		if parentToCheck.has_method(callbackName):
+			return parentToCheck
+		
+		parentToCheck = parentToCheck.get_parent()
+
+	return null 
+	
+#short circuit function if no ancestor node with callback function was found
 #this is mostly to avoid the non-terminating error that occurs when the signal is fired but no function to receive.
-func _collision_fallback(otherArea):
+func _short_circuit(arg1 = null):
+	#print ("no ancestor found with the callback function")
 	pass
 	
 func _node_added_to_scene_tree(addedNode):
@@ -157,4 +206,8 @@ func _node_added_to_scene_tree(addedNode):
 		Main = addedNode
 	
 	if addedNode.get_class().to_lower() == "area2d":
-		_attach_collision_to_area2d(addedNode)
+		#_attach_collision_to_area2d(addedNode)
+		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
+		
+	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
+		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
