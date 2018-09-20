@@ -138,7 +138,7 @@ func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not 
 				return dirResult
 		#elif file.ends_with(".tscn") and file.begins_with(fileName) and file.length == (fileName.length + 5):
 		elif file.to_lower() == fileName.to_lower() + ("." + extension if fileName.find("." + extension) == -1 else ""):
-			return dir.get_current_dir() + "/" + file
+			return dir.get_current_dir() + file
 			
 		file = dir.get_next()
 		
