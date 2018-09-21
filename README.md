@@ -3,7 +3,6 @@
 A Godot add-on library to simplify common operations.
 
 ## Install instructions
-Download files to the typical addons directory (res://addons/GoGodot) through AssetLib
 
 Within the project, open the setup.tscn file. This should load the library into the project settings.
 
