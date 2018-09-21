@@ -9,6 +9,9 @@ export var JumpStrength = 500
 export (Vector2) var CollisionBounds = Vector2(10, 10) setget _set_collision_bounds
 export (bool) var Set_Bounds_To_Sibling_Sprite = false setget _set_bounds_to_sibling_sprite
 
+export (bool) var WASD = false
+export (bool) var ArrowKeys = true
+
 var motion = Vector2(0, 0)
 
 func _set_collision_bounds(value):
@@ -74,15 +77,15 @@ func _physics_process(delta):
 		
 		motion.y += Gravity
 	
-		if Input.is_action_pressed("ui_right"):
+		if (ArrowKeys and Input.is_key_pressed(KEY_RIGHT)) or (WASD and Input.is_key_pressed(KEY_D)):
 			motion.x = Speed
-		elif Input.is_action_pressed("ui_left"):
+		elif (ArrowKeys and Input.is_key_pressed(KEY_LEFT)) or (WASD and Input.is_key_pressed(KEY_A)):
 			motion.x = -Speed
 		else:
 			motion.x = 0
 			
 		if self.is_on_floor():
-			if Input.is_action_just_pressed("ui_up"):
+			if (ArrowKeys and Input.is_key_pressed(KEY_UP)) or (WASD and Input.is_key_pressed(KEY_W)):
 				motion.y = -JumpStrength
 				
 		motion = move_and_slide(motion, UP)
