@@ -22,6 +22,14 @@ func _attach_all_signals():
 	for area in get_all_nodes_by_class("Area2D"):
 		#_attach_collision_to_area2d(area)
 		_attach_signal_to_ancestor_callback(area, "area_entered", "go_collision")
+		_attach_signal_to_ancestor_callback(area, "body_entered", "go_body_collision")
+		
+	for body in get_all_nodes_by_class("RigidBody2D"):
+		var nodeWithCallback = _attach_signal_to_ancestor_callback(body, "body_entered", "go_body_collision")
+		if nodeWithCallback:
+			body.contact_monitor = true
+			if body.contacts_reported == 0:
+				body.contacts_reported = 2
 		
 	for spritesheet in get_all_nodes_with_signal("on_animation_end"):
 		_attach_signal_to_ancestor_callback(spritesheet, "on_animation_end", "go_animation_end")
@@ -152,8 +160,10 @@ func _attach_signal_to_ancestor_callback(nodeWithSignal, signalName, callbackNam
 	if nodeToAddCallback and nodeToAddCallback.has_method(callbackName):
 		
 		nodeWithSignal.connect(signalName, nodeToAddCallback, callbackName)
+		return nodeToAddCallback #in case caller wants to do anything with this
 	else:
 		nodeWithSignal.connect(signalName, self, "_short_circuit")
+		return null
 
 #attach a collision signal callback to area2d if it has a script, and if not, to its nearest parent with a script
 #this is to make collisions more simple for beginners, as all they have to do is type the go_collision function and it
@@ -208,6 +218,14 @@ func _node_added_to_scene_tree(addedNode):
 	if addedNode.get_class().to_lower() == "area2d":
 		#_attach_collision_to_area2d(addedNode)
 		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
+		_attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
+		
+	if addedNode.get_class().to_lower() == "rigidbody2d":
+		var nodeWithCallback = _attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
+		if nodeWithCallback:
+			addedNode.contact_monitor = true
+			if addedNode.contacts_reported == 0:
+				addedNode.contacts_reported = 2
 		
 	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
 		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
