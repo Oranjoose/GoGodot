@@ -117,3 +117,23 @@ The following properties of the Spritesheet node can be configured in the editor
 * Reverse - specify if the animation should be playing backwards. Note: this will play from the Final Frame to the First Frame.
 * Is Playing - this allows you to preview the animation in the editor.
 * Autostart - specify whether or not the spritesheet should start playing when it enters the scene at runtime.
+
+The following are functions that belong to the Spritesheet node that you can run on the Spritesheet object in the code:
+* play() - starts the animation
+* stop() - stops the animation and returns to the First Frame
+* pause() - stops the animation, but stays on the Current Frame
+
+The following are callback functions that can be added to the nearest ancestor to the Spritesheet node that will automatically run under its respective conditions:
+* func go_animation_end() - the nearest ancestor node to Spritesheet will run this function when the Spritesheet animation ends or loops.
+
+---
+### Linear Motion
+Adding this node to any node with a transform (e.g. Node2D, Sprite, etc.) will enable you to easily make the node "go" at a fixed speed. Unlike the `linear_velocity` property found on *some* nodes, the speed is controlled with an angle and speed rather than x and y velocity.
+
+The following properties can be modified in the editor in order to tweak the behavior of the Linear Motion module:
+* Enabled - check this to enable the module to work. If it is unchecked (whether in the editor or in the code), the parent node will stop moving as a result of the Linear Motion node.
+* Match Angle - check this to have the parent node move in the direction of its angle. Whatever angle the parent of Linear Motion is set to is the direction it will go. Otherwise, the node will go the direction of the Angle Of Motion property.
+* Angle of Motion - if the Match Angle property is unchecked, the parent node will go the direction provided by the Angle of Motion property. This is good for when you don't want to rotate the parent node to have Linear Motion work.
+* Speed - the speed of the Linear Motion in pixels per second.
+
+
