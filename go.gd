@@ -97,7 +97,6 @@ func restart_scene():
 	get_tree().reload_current_scene()
 	
 func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
-	
 	var scenePath = _find_file(sceneName)
 	if scenePath:
 		var instance = load(scenePath).instance()
@@ -146,7 +145,9 @@ func _find_file(fileName, dirPath = "res://", extension = "tscn"): #if path not 
 				return dirResult
 		#elif file.ends_with(".tscn") and file.begins_with(fileName) and file.length == (fileName.length + 5):
 		elif file.to_lower() == fileName.to_lower() + ("." + extension if fileName.find("." + extension) == -1 else ""):
-			return dir.get_current_dir() + file
+			var curdir = dir.get_current_dir()
+			var isRoot = curdir.substr(curdir.length() - 1, 1) == "/"
+			return curdir + ("" if isRoot else "/") + file
 			
 		file = dir.get_next()
 		
@@ -229,3 +230,36 @@ func _node_added_to_scene_tree(addedNode):
 		
 	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
 		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
+		
+
+func random_integer(minimum = null, maximum = null) -> int:
+	assert(minimum <= maximum)
+	
+	if minimum and maximum:
+		return int(floor(rand_range(minimum, maximum + 1))) #have to floor before int cast, because floor floors negative numbers, and int cast just truncates them
+	#if there is only one argument, get 1 to provided argument
+	elif minimum:
+		return int(floor(rand_range(1, minimum + 1)))
+	#if there are no arguments, then get a die roll 1 to 6
+	else:
+		return int(floor(rand_range(1, 7)))
+		
+
+func array_shuffle(arrayToShuffle:Array) -> Array:
+	var shuffledArray = []
+	
+	while true:
+		if arrayToShuffle.size() == 0:
+			break
+			
+		var randIndex = int(rand_range(0, arrayToShuffle.size()))
+		shuffledArray.append(arrayToShuffle[randIndex])
+		
+		arrayToShuffle.remove(randIndex)
+		
+	return shuffledArray
+	
+func spawn_instance_grid(SceneName, NumColumns, NumRows, ColumnSpacing = 32, RowSpacing = 32, xPos = 0, yPos = 0, parent = Main):
+	for i in range(NumColumns):
+		for j in range(NumRows):
+			spawn_instance(SceneName, (i * ColumnSpacing) + xPos, (j * RowSpacing) + yPos, parent)
