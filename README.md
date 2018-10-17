@@ -30,6 +30,23 @@ Examples:
 
 -------
 
+### function spawn_instance_grid
+
+Spawns a rectangular grid of instances of a provided scene. This is good for creating formations of enemies, or arcade puzzle elements.
+
+`go.spawn_instance_grid(sceneName, numberOfColumns, numberOfRows, columnSpacing, rowSpacing, xPosition, yPosition, whereToAddChildren)`
+
+Examples:
+#spawn a 4 by 5 grid of cards that are spread out with 100 pixels of space between them horizontally and vertically.
+`go.spawn_instance_grid("CardScene", 4, 5, 100, 100)`
+
+#the same as the above example, but the grid is placed at a position of 250, 150 from the root node.
+`go.spawn_instance_grid("CardScene", 4, 5, 100, 100, 250, 150)`
+
+#the same as the above example, but the grid is put as a child of the caller, rather than the scene's root node.
+`go.spawn_instance_grid("CardScene", 4, 5, 100, 100, 250, 150, self)`
+
+---
 ### get the main scene root node
 
 #the following code gets a reference to the main scene root node:
@@ -85,6 +102,30 @@ Example:
 go.remove(myObj)
 ```
 Destroy is simply an alias for `queue_free()`, but ensures that the object trying to be removed can actually queue_free.
+
+---
+
+### function random_integer
+
+Gets a random integer in range.
+
+Example:
+```
+go.random_integer(2, 12) #get random integer, minimum of 2 and maximum of 12
+```
+
+If no arguments provided, then assume die roll 1 to 6. If only one argument provided, assume range of 1 to maximum of that argument provided. 
+
+---
+
+### function array_shuffle
+
+Supply an array to shuffle, and the shuffled array is returned.
+
+Example:
+```
+var shuffledFruitArray = go.array_shuffle(["apple", "banana", "orange"])
+```
 
 ---
 ## Go Modules
