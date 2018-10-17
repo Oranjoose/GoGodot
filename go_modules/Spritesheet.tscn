@@ -4,9 +4,10 @@
 
 [node name="Spritesheet" type="Sprite"]
 hframes = 2
+frame = 1
 script = ExtResource( 1 )
 SpritesheetTexture = null
-CurrentFrame = 0
+CurrentFrame = 1
 Framerate = 12.0
 HorzFrames = 2
 VertFrames = 1

@@ -1,13 +1,14 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://GoGodot/go_modules/Platformer.gd" type="Script" id=1]
+[ext_resource path="res://GoGodot/go_modules/TopDownMovement.gd" type="Script" id=1]
 
 [sub_resource type="RectangleShape2D" id=1]
 
 custom_solver_bias = 0.0
 extents = Vector2( 0.5, 0.5 )
 
-[node name="Platformer" type="KinematicBody2D"]
+[node name="TopDownMovement" type="KinematicBody2D"]
+scale = Vector2( 10, 10 )
 input_pickable = false
 collision_layer = 1
 collision_mask = 1
@@ -15,11 +16,10 @@ collision/safe_margin = 0.08
 motion/sync_to_physics = false
 script = ExtResource( 1 )
 _sections_unfolded = [ "Script", "Transform" ]
-Gravity = 20
 Speed = 200
-JumpStrength = 500
-CollisionBounds = Vector2( 1, 1 )
+CollisionBounds = Vector2( 10, 10 )
 Set_Bounds_To_Sibling_Sprite = false
+LimitFourDirections = null
 WASD = false
 ArrowKeys = true
 

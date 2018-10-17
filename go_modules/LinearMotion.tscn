@@ -31,11 +31,9 @@ func _process(delta):
 "
 
 [node name="LinearMotion" type="Node"]
-
 script = SubResource( 1 )
 Enabled = true
 MatchAngle = true
 AngleOfMotion = 110.0
 Speed = 400
-
 
