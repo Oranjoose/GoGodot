@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://GoGodot/go_modules/Teletype.gd" type="Script" id=1]
+
+[node name="Teletype" type="Node"]
+script = ExtResource( 1 )
+Autostart = true
+TypeSpeed = 8
+
+[node name="Timer" type="Timer" parent="."]
+process_mode = 1
+wait_time = 0.01
+one_shot = false
+autostart = false
+
+[connection signal="timeout" from="Timer" to="." method="typeTimer_timeout"]

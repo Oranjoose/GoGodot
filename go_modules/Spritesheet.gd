@@ -1,7 +1,7 @@
 tool
 extends Sprite
 
-class_name Spritesheet
+#class_name Spritesheet
 
 export (Texture) var SpritesheetTexture setget _set_texture
 

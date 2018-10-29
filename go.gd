@@ -106,7 +106,7 @@ func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
 		elif "rect_position" in instance:
 			instance.rect_position = Vector2(xOrObject, y)
 			
-		Main.add_child(instance)
+		parent.add_child(instance)
 		
 #		#this is now handled by the node_added signal attached to the scene tree, so as to catch new Area2D nodes
 #			#created by traditional methods of adding new instances without go.spawn_instance 
@@ -233,12 +233,12 @@ func _node_added_to_scene_tree(addedNode):
 		
 
 func random_integer(minimum = null, maximum = null) -> int:
-	assert(minimum <= maximum)
 	
-	if minimum and maximum:
+	if minimum != null and maximum != null:
+		assert(minimum <= maximum)
 		return int(floor(rand_range(minimum, maximum + 1))) #have to floor before int cast, because floor floors negative numbers, and int cast just truncates them
 	#if there is only one argument, get 1 to provided argument
-	elif minimum:
+	elif minimum != null:
 		return int(floor(rand_range(1, minimum + 1)))
 	#if there are no arguments, then get a die roll 1 to 6
 	else:
@@ -260,6 +260,9 @@ func array_shuffle(arrayToShuffle:Array) -> Array:
 	return shuffledArray
 	
 func spawn_instance_grid(SceneName, NumColumns, NumRows, ColumnSpacing = 32, RowSpacing = 32, xPos = 0, yPos = 0, parent = Main):
+	var returnArray = []
 	for i in range(NumColumns):
 		for j in range(NumRows):
-			spawn_instance(SceneName, (i * ColumnSpacing) + xPos, (j * RowSpacing) + yPos, parent)
+			returnArray.append(spawn_instance(SceneName, (i * ColumnSpacing) + xPos, (j * RowSpacing) + yPos, parent))
+			
+	return returnArray
