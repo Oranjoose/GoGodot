@@ -180,4 +180,14 @@ The following properties can be modified in the editor in order to tweak the beh
 * Angle of Motion - if the Match Angle property is unchecked, the parent node will go the direction provided by the Angle of Motion property. This is good for when you don't want to rotate the parent node to have Linear Motion work.
 * Speed - the speed of the Linear Motion in pixels per second.
 
+---
+### TopDownMovement
+Adding this node to any node with a transform (e.g. Node2D, Sprite, etc.) gives that node traditional top-down movement mechanics, as in classic top-down games, such as _The Legend of Zelda_ and _Metal Gear_. 
 
+The following properties can be configured in the editor to customize how the top-down motion works.
+* Speed - pixels per second the node moves in the respective directions. Note that moving diagonally will move the given pixels per second _diagonally_, taking into account the correct vector magnitude.
+* CollisionBounds - set the size of the default rectangular collision boundaries of the character.
+* Set_Bounds_To_Sibling_Sprite - clicking this checkbox will have the module find the first Sprite sibling of the TopDownMovement node, and use its dimensions to automatically figure out the size of the rectangular collision shape.
+* LimitFourDirections - with this selected, the TopDownMotion can only go one direction at a time, instead of diagonally.
+* WASD - with this checked, the w, a, s, and d keys control the TopDownMotion in game.
+* ArrowKeys - with this checked, the arrow keys control the TopDownMotion in game. Note that WASD and ArrowKeys can both be checked, allowing either set of keys to work for the TopDownMotion.
