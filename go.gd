@@ -18,25 +18,44 @@ func _ready():
 	pass
 	
 func _attach_all_signals():
+	var allNodes = get_all_nodes()
+	
+	for node in allNodes:
+		_node_added_to_scene_tree(node)
 	#attach the go_collision callback to every area 2d node at the beginning of the game
-	for area in get_all_nodes_by_class("Area2D"):
-		#_attach_collision_to_area2d(area)
-		_attach_signal_to_ancestor_callback(area, "area_entered", "go_collision")
-		_attach_signal_to_ancestor_callback(area, "body_entered", "go_body_collision")
-		
-	for body in get_all_nodes_by_class("RigidBody2D"):
-		var nodeWithCallback = _attach_signal_to_ancestor_callback(body, "body_entered", "go_body_collision")
-		if nodeWithCallback:
-			body.contact_monitor = true
-			if body.contacts_reported == 0:
-				body.contacts_reported = 2
-		
-	for spritesheet in get_all_nodes_with_signal("on_animation_end"):
-		_attach_signal_to_ancestor_callback(spritesheet, "on_animation_end", "go_animation_end")
+#	for area in get_all_nodes_by_class("Area2D"):
+#		_attach_signal_to_ancestor_callback(area, "area_entered", "go_collision")
+#		_attach_signal_to_ancestor_callback(area, "body_entered", "go_body_collision")
+#
+#	for body in get_all_nodes_by_class("RigidBody2D"):
+#		var nodeWithCallback = _attach_signal_to_ancestor_callback(body, "body_entered", "go_body_collision")
+#		if nodeWithCallback:
+#			body.contact_monitor = true
+#			if body.contacts_reported == 0:
+#				body.contacts_reported = 2
+#
+#	for spritesheet in get_all_nodes_with_signal("on_animation_end"):
+#		_attach_signal_to_ancestor_callback(spritesheet, "on_animation_end", "go_animation_end")
 
 func _process(delta):
 
 	pass
+	
+func get_all_nodes():
+	return _get_descendents_within_node(get_tree().root)
+	
+func _get_descendents_within_node(node):
+	var nodes = [node]
+	var children = node.get_children()
+	
+	if children.empty():
+		return nodes
+	
+	for child in children:
+		nodes += _get_descendents_within_node(child)
+	
+	return nodes
+		
 	
 func get_all_nodes_by_class(className):
 	return _get_nodes_by_class_within_node(className, get_tree().root)
@@ -107,11 +126,7 @@ func spawn_instance(sceneName, xOrObject = 0, y = 0, parent=Main):
 			instance.rect_position = Vector2(xOrObject, y)
 			
 		parent.add_child(instance)
-		
-#		#this is now handled by the node_added signal attached to the scene tree, so as to catch new Area2D nodes
-#			#created by traditional methods of adding new instances without go.spawn_instance 
-#		for area in _get_nodes_by_class_within_node("Area2D", instance):
-#			_attach_collision_to_area2d(area)
+
 		
 		return instance
 	else:
@@ -165,18 +180,6 @@ func _attach_signal_to_ancestor_callback(nodeWithSignal, signalName, callbackNam
 	else:
 		nodeWithSignal.connect(signalName, self, "_short_circuit")
 		return null
-
-#attach a collision signal callback to area2d if it has a script, and if not, to its nearest parent with a script
-#this is to make collisions more simple for beginners, as all they have to do is type the go_collision function and it
-	#automatically works
-#this function has been mostly deprecated by the more generalized _attach_signal_to_ancestor_callback
-func _attach_collision_to_area2d(area):
-	var nodeToAddCallback = _get_closest_node_in_ancestry_with_script(area)
-	
-	if nodeToAddCallback and nodeToAddCallback.has_method("go_collision"):
-		area.connect("area_entered", nodeToAddCallback, "go_collision")
-	else:
-		area.connect("area_entered", self, "_collision_fallback")
 	
 func _get_closest_node_in_ancestry_with_script (nodeToCheck):
 	if nodeToCheck.get_script():
@@ -216,20 +219,23 @@ func _node_added_to_scene_tree(addedNode):
 	if addedNode == get_tree().root.get_children()[get_tree().root.get_children().size()-1]:
 		Main = addedNode
 	
-	if addedNode.get_class().to_lower() == "area2d":
-		#_attach_collision_to_area2d(addedNode)
-		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
-		_attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
-		
-	if addedNode.get_class().to_lower() == "rigidbody2d":
-		var nodeWithCallback = _attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
-		if nodeWithCallback:
-			addedNode.contact_monitor = true
-			if addedNode.contacts_reported == 0:
-				addedNode.contacts_reported = 2
-		
-	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
-		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
+	var signallist = addedNode.get_signal_list()
+	for sig in signallist:
+		_attach_signal_to_ancestor_callback(addedNode, sig.name, sig.name)
+	
+#	if addedNode.get_class().to_lower() == "area2d":
+#		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
+#		_attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
+#
+#	if addedNode.get_class().to_lower() == "rigidbody2d":
+#		var nodeWithCallback = _attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
+#		if nodeWithCallback:
+#			addedNode.contact_monitor = true
+#			if addedNode.contacts_reported == 0:
+#				addedNode.contacts_reported = 2
+#
+#	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
+#		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
 		
 
 func random_integer(minimum = null, maximum = null) -> int:
