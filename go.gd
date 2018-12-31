@@ -42,9 +42,9 @@ func _process(delta):
 	pass
 	
 func get_all_nodes():
-	return _get_descendents_within_node(get_tree().root)
+	return _get_descendants_within_node(get_tree().root)
 	
-func _get_descendents_within_node(node):
+func _get_descendants_within_node(node):
 	var nodes = [node]
 	var children = node.get_children()
 	
@@ -52,7 +52,7 @@ func _get_descendents_within_node(node):
 		return nodes
 	
 	for child in children:
-		nodes += _get_descendents_within_node(child)
+		nodes += _get_descendants_within_node(child)
 	
 	return nodes
 		
@@ -218,6 +218,14 @@ func _node_added_to_scene_tree(addedNode):
 	#so need to reset value for Main variable
 	if addedNode == get_tree().root.get_children()[get_tree().root.get_children().size()-1]:
 		Main = addedNode
+		
+	#if a rigid body wants to call body_entered, then automatically enable its contact monitoring, which for some reason is off by default
+	if addedNode.get_class().to_lower() == "rigidbody2d":
+		var nodeWithCallback = _attach_signal_to_ancestor_callback(addedNode, "body_entered", "body_entered")
+		if nodeWithCallback:
+			addedNode.contact_monitor = true
+			if addedNode.contacts_reported == 0:
+				addedNode.contacts_reported = 2
 	
 	var signallist = addedNode.get_signal_list()
 	for sig in signallist:
@@ -227,12 +235,7 @@ func _node_added_to_scene_tree(addedNode):
 #		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
 #		_attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
 #
-#	if addedNode.get_class().to_lower() == "rigidbody2d":
-#		var nodeWithCallback = _attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
-#		if nodeWithCallback:
-#			addedNode.contact_monitor = true
-#			if addedNode.contacts_reported == 0:
-#				addedNode.contacts_reported = 2
+#	
 #
 #	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
 #		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
