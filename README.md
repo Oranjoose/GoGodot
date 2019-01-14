@@ -54,23 +54,23 @@ Examples:
 
 -------
 
-### callback function go_collision and go_body_collision
+### callback functions automatically connected to built-in signals
 
-Area2D nodes automatically call the go_collision function within their own script, or if they don't have a script, the script of their nearest ancestor.
-To activate, just write a go_collision function definition inside an Area2D node's script, or its parent (or grandparent, etc.).
-NOTE: This works on  
+NOTE: This is a *breaking change*. This replaces go_collision and go_body_collision
+
+Each node's built-in signals will automatically connect to a callback function whose name matches the signal name, within a script that is either on the node or its nearest ancestor node.
+To activate, just write a function definition whose name is the desired signal's name inside the node's script, or its parent (or grandparent, etc.).
 
 Examples:
 
 ```
-#go_collision called when area overlaps another area
-func go_collision(otherArea):
+Extends Area2D
+#area_entered called when area overlaps another area
+func area_entered(otherArea):
   #do collision related things
 ```
 
-Additionally, if you define a `go_body_collision` function within an ancestor node of either an Area2D or RigidBody2D node, then the `go_body_collision` function will run whenever the Area2D or RigidBody2D collides with another body node (e.g. RigidBody2D, KinematicBody2D, etc.).
-
-Note: normally, you would have to turn on contact monitor on the RigidBody2D and increase the number of contacts reporting from the default 0 value. Fortunately, if an ancestor node is found with the go_body_collision function, then GoGodot will automatically turn on contact monitor and increase contacts reporting so that it just works (without having to manually tweak those settings).
+Note: normally, you would have to turn on contact monitor on the RigidBody2D and increase the number of contacts reporting from the default 0 value. Fortunately, if an ancestor node is found with the `body_entered` function, then GoGodot will automatically turn on contact monitor and increase contacts reporting so that it just works (without having to manually tweak those settings).
 
 -------
 
