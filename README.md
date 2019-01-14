@@ -5,9 +5,6 @@ A Godot add-on library to simplify common operations.
 ## Install instructions
 
 Within the project, open the setup.tscn file. This should load the library into the project settings.
-
-Close and re-open the project in order to have auto-complete on the go object while writing scripts.
-
 ## Reference
 
 -------
