@@ -177,9 +177,9 @@ func _attach_signal_to_ancestor_callback(nodeWithSignal, signalName, callbackNam
 		
 		nodeWithSignal.connect(signalName, nodeToAddCallback, callbackName)
 		return nodeToAddCallback #in case caller wants to do anything with this
-	else:
-		nodeWithSignal.connect(signalName, self, "_short_circuit")
-		return null
+#	else:
+#		nodeWithSignal.connect(signalName, self, "_short_circuit")
+#		return null
 	
 func _get_closest_node_in_ancestry_with_script (nodeToCheck):
 	if nodeToCheck.get_script():
@@ -207,6 +207,7 @@ func _get_closest_node_in_ancestry_with_callback (nodeToCheck, callbackName):
 
 	return null 
 	
+#might deprecate this function in next update (1-21-2019)
 #short circuit function if no ancestor node with callback function was found
 #this is mostly to avoid the non-terminating error that occurs when the signal is fired but no function to receive.
 func _short_circuit(arg1 = null):
