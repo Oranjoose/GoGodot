@@ -230,17 +230,14 @@ func _node_added_to_scene_tree(addedNode):
 	
 	var signallist = addedNode.get_signal_list()
 	for sig in signallist:
+		if addedNode is RigidBody2D and sig.name == "body_entered": 
+			continue #because we already attached this signal to its callback function just above
 		_attach_signal_to_ancestor_callback(addedNode, sig.name, sig.name)
-	
-#	if addedNode.get_class().to_lower() == "area2d":
-#		_attach_signal_to_ancestor_callback(addedNode, "area_entered", "go_collision")
-#		_attach_signal_to_ancestor_callback(addedNode, "body_entered", "go_body_collision")
-#
-#	
-#
-#	if addedNode.get_script() and addedNode.get_script().has_script_signal("on_animation_end"):
-#		_attach_signal_to_ancestor_callback(addedNode, "on_animation_end", "go_animation_end")
 		
+	#the start of making it so that scripts can just write the action in the input map as a function, and have it run
+	#without having to write if Input.is_action_just_pressed("ActionName")
+	#var allActions = InputMap.get_actions()
+	
 
 func random_integer(minimum = null, maximum = null) -> int:
 	
